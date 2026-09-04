@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MR.DI — Java 后端开发者的个人主页与项目集">
+<title>MR.DI // ~/portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #37F712;
+    --primary-dim: #1fa80c;
+    --secondary: #00A6F4;
+    --success: #00A63D;
+    --warning: #FE9900;
+    --danger: #FF2157;
+    --bg: #070a07;
+    --bg-panel: #0c110c;
+    --bg-inset: #050805;
+    --border: #1c261c;
+    --border-bright: #2e4530;
+    --text: #d6d3d1;
+    --text-dim: #a8a29e;
+    --text-faint: #78716b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Space Mono", "JetBrains Mono", ui-monospace, monospace;
+    font-size: 15px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* subtle scanlines, purely atmospheric */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(55, 247, 18, 0.015) 0px,
+      rgba(55, 247, 18, 0.015) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    z-index: 9999;
+  }
+
+  ::selection { background: var(--primary); color: #04140a; }
+
+  a { color: var(--primary); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+
+  .caps {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  /* ============ header ============ */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(7, 10, 7, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+  }
+  .logo {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+  .logo .prompt { color: var(--primary); }
+  .logo:hover { text-decoration: none; }
+  .nav-links { display: flex; gap: 22px; list-style: none; }
+  .nav-links a {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+  .nav-links a:hover { color: var(--primary); text-decoration: none; }
+  .nav-links a::before { content: "./"; color: var(--primary-dim); }
+
+  /* ============ hero ============ */
+  .hero { padding: 72px 0 56px; }
+
+  .terminal {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: var(--bg-inset);
+    border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: var(--danger); }
+  .dot.y { background: var(--warning); }
+  .dot.g { background: var(--success); }
+  .terminal-title {
+    margin-left: 8px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--text-faint);
+  }
+  .terminal-body {
+    padding: 18px 16px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85rem;
+    line-height: 1.9;
+  }
+  .terminal-body .p { color: var(--primary); }
+  .terminal-body .c { color: var(--text-dim); }
+  .terminal-body .k { color: var(--secondary); }
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1.05em;
+    background: var(--primary);
+    vertical-align: text-bottom;
+    animation: blink 1.05s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  h1 {
+    font-size: clamp(2.2rem, 6vw, 3.4rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+  h1 .accent { color: var(--primary); }
+
+  .hero-sub {
+    color: var(--text-dim);
+    max-width: 620px;
+    margin-bottom: 26px;
+  }
+  .hero-sub strong { color: var(--text); font-weight: 700; }
+
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 4px;
+    border: 1px solid var(--primary);
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn:hover { text-decoration: none; }
+  .btn-solid { background: var(--primary); color: #04140a; }
+  .btn-solid:hover { background: #52ff34; }
+  .btn-ghost { background: transparent; color: var(--primary); }
+  .btn-ghost:hover { background: rgba(55, 247, 18, 0.08); }
+
+  /* ============ sections ============ */
+  section { padding: 44px 0; border-top: 1px solid var(--border); }
+
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 26px;
+  }
+  .sec-head h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  .sec-head h2::before {
+    content: "# ";
+    color: var(--primary);
+  }
+
+  /* about */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 28px;
+  }
+  .about-text p { color: var(--text-dim); margin-bottom: 14px; }
+  .about-text strong { color: var(--text); }
+
+  .stat-box {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.82rem;
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-row .k { color: var(--text-faint); }
+  .stat-row .v { color: var(--primary); font-weight: 700; }
+
+  /* skills */
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.76rem;
+    padding: 5px 11px;
+    border: 1px solid var(--border-bright);
+    border-radius: 4px;
+    color: var(--text-dim);
+    background: var(--bg-panel);
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .tag:hover { border-color: var(--primary); color: var(--primary); }
+  .tag.core { color: var(--primary); border-color: var(--primary-dim); }
+
+  .skill-group { margin-bottom: 20px; }
+  .skill-group .caps { display: block; margin-bottom: 10px; }
+
+  /* projects */
+  .project {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 18px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 14px;
+    transition: border-color 0.15s;
+  }
+  .project:hover { border-color: var(--border-bright); }
+  .project.featured { border-color: var(--primary-dim); }
+  .project.featured:hover { border-color: var(--primary); }
+
+  .project-num {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-faint);
+  }
+  .project.featured .project-num { color: var(--primary); }
+
+  .project-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .project-name {
+    font-size: 1.12rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .badge {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--warning);
+    color: var(--warning);
+  }
+  .badge.ai { border-color: var(--secondary); color: var(--secondary); }
+
+  .project-desc { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 6px; }
+  .project-points {
+    list-style: none;
+    margin: 8px 0 12px;
+    font-size: 0.84rem;
+    color: var(--text-dim);
+  }
+  .project-points li { padding: 2px 0; }
+  .project-points li::before {
+    content: "▸ ";
+    color: var(--primary);
+  }
+
+  .project-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .project-tech {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.74rem;
+    color: var(--text-faint);
+  }
+  .project-link {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  /* contact */
+  .contact-box {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+  }
+  .contact-box p { color: var(--text-dim); margin-bottom: 18px; }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 22px 0 30px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.74rem;
+    color: var(--text-faint);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* responsive */
+  @media (max-width: 720px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .project { grid-template-columns: 1fr; gap: 8px; }
+    .nav-links { gap: 14px; }
+    .hero { padding: 48px 0 40px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cursor { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#top"><span class="prompt">guest@mr.di</span>:~$</a>
+    <nav aria-label="主导航">
+      <ul class="nav-links">
+        <li><a href="#about">about</a></li>
+        <li><a href="#skills">skills</a></li>
+        <li><a href="#projects">projects</a></li>
+        <li><a href="#contact">contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ================= HERO ================= -->
+  <div class="wrap hero">
+    <div class="terminal" role="img" aria-label="终端窗口：whoami 命令输出 MR.DI，Java 后端开发者">
+      <div class="terminal-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="terminal-title">zsh — 80×24</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="p">➜</span> <span class="k">~</span> whoami</div>
+        <div class="c">mr.di — java backend developer</div>
+        <div><span class="p">➜</span> <span class="k">~</span> cat focus.txt</div>
+        <div class="c">spring ecosystem · redis · llm applications (rag/agent)</div>
+        <div><span class="p">➜</span> <span class="k">~</span> <span class="cursor" aria-hidden="true"></span></div>
+      </div>
+    </div>
+
+    <h1>你好，我是 <span class="accent">MR.DI</span>。<br>我用 Java 构建后端系统。</h1>
+    <p class="hero-sub">
+      一名专注于 <strong>Java 后端</strong> 的开发者，熟悉 <strong>Spring Boot / Spring Security / MyBatis-Plus</strong> 技术栈，
+      热衷于 <strong>Redis 缓存与并发实战</strong>，目前正在探索 <strong>大语言模型应用</strong>（RAG 检索增强、ReAct Agent）
+      与后端工程的结合。
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-solid" href="#projects">查看项目 ↓</a>
+      <a class="btn btn-ghost" href="https://github.com/LeiHub13" target="_blank" rel="noopener">GitHub →</a>
+    </div>
+  </div>
+
+  <!-- ================= ABOUT ================= -->
+  <section id="about">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>关于我</h2>
+        <span class="caps">about.md</span>
+      </div>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>
+            我是一名后端方向的开发者，主要使用 <strong>Java + Spring Boot</strong> 构建业务系统，
+            也使用 <strong>Vue 3 + TypeScript</strong> 完成前后端分离项目的前端部分。
+          </p>
+          <p>
+            从业务 CRUD 到高并发场景，我关注的不只是"能跑"，更是<strong>为什么这样设计</strong>：
+            缓存穿透怎么防、分布式锁怎么加、一人一单如何保证、RAG 检索链路如何落地——
+            这些问题驱动我完成了下面的一系列项目。
+          </p>
+          <p>
+            毕业设计方向是 <strong>LLM + 教育</strong>：把大模型能力（答疑、出题、批改、学情分析）
+            以独立 Python AI 服务的形式接入 Java 业务骨架，做了一套完整的智能学习助手系统。
+          </p>
+        </div>
+        <aside class="stat-box" aria-label="个人信息速览">
+          <div class="stat-row"><span class="k">$ name</span><span class="v">MR.DI</span></div>
+          <div class="stat-row"><span class="k">$ role</span><span class="v">Backend Dev</span></div>
+          <div class="stat-row"><span class="k">$ main_lang</span><span class="v">Java</span></div>
+          <div class="stat-row"><span class="k">$ sub_lang</span><span class="v">Python / TS</span></div>
+          <div class="stat-row"><span class="k">$ projects</span><span class="v">5+</span></div>
+          <div class="stat-row"><span class="k">$ status</span><span class="v">open_to_work</span></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SKILLS ================= -->
+  <section id="skills">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>技术栈</h2>
+        <span class="caps">ls ~/skills</span>
+      </div>
+
+      <div class="skill-group">
+        <span class="caps">// 后端 core</span>
+        <div class="tags">
+          <span class="tag core">Java 8 / 17</span>
+          <span class="tag core">Spring Boot 2 / 3</span>
+          <span class="tag core">Spring Security</span>
+          <span class="tag core">MyBatis-Plus</span>
+          <span class="tag">Maven</span>
+          <span class="tag">JWT 双 Token</span>
+          <span class="tag">RESTful API</span>
+          <span class="tag">Swagger / OpenAPI</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <span class="caps">// 数据与中间件</span>
+        <div class="tags">
+          <span class="tag core">MySQL</span>
+          <span class="tag core">Redis</span>
+          <span class="tag">Redisson 分布式锁</span>
+          <span class="tag">Redis GEO / Bitmap / ZSet</span>
+          <span class="tag">RabbitMQ</span>
+          <span class="tag">Milvus 向量库</span>
+          <span class="tag">MinIO</span>
+          <span class="tag">Nginx</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <span class="caps">// ai 应用</span>
+        <div class="tags">
+          <span class="tag core">LangChain</span>
+          <span class="tag">FastAPI</span>
+          <span class="tag">RAG 检索增强</span>
+          <span class="tag">ReAct Agent</span>
+          <span class="tag">SSE 流式输出</span>
+          <span class="tag">Prompt 工程</span>
+          <span class="tag">DeepSeek API</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <span class="caps">// 前端与运维</span>
+        <div class="tags">
+          <span class="tag">Vue 3</span>
+          <span class="tag">TypeScript</span>
+          <span class="tag">Vite</span>
+          <span class="tag">微信小程序</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Git</span>
+          <span class="tag">Linux / Ubuntu</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROJECTS ================= -->
+  <section id="projects">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>项目</h2>
+        <span class="caps">ls ~/projects --sort=recent</span>
+      </div>
+
+      <!-- 01 -->
+      <article class="project featured">
+        <div class="project-num">01</div>
+        <div>
+          <div class="project-top">
+            <span class="project-name">smart-learning-assistant</span>
+            <span class="badge ai">AI · 毕设</span>
+          </div>
+          <p class="project-desc">基于大语言模型的智能学习助手系统 V3 —— Spring Boot 业务骨架 + Python LangChain AI 服务。</p>
+          <ul class="project-points">
+            <li>RAG 知识库答疑：文档分块向量化、查询改写、LLM 精排重排序，SSE 逐块流式返回并附引用来源</li>
+            <li>ReAct Agent 自主调用检索 / 学情 / 错题工具；AI 出题、讲义生成、主观题批改、学情建议</li>
+            <li>JWT 双 Token 认证；缓存 / 向量库 / 存储 / 消息队列全部可降级（memory ↔ redis / milvus / minio / rabbit）</li>
+            <li>Docker 一键部署三镜像：前端 / 后端 / AI 服务</li>
+          </ul>
+          <div class="project-foot">
+            <span class="project-tech">Java 17 · Spring Boot · FastAPI · LangChain · DeepSeek · MySQL · Milvus</span>
+            <a class="project-link" href="https://github.com/LeiHub13/smart-learning-assistant" target="_blank" rel="noopener">view_source →</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 02 -->
+      <article class="project">
+        <div class="project-num">02</div>
+        <div>
+          <div class="project-top">
+            <span class="project-name">DianPing</span>
+            <span class="badge">Redis 实战</span>
+          </div>
+          <p class="project-desc">店铺点评系统 —— 基于黑马点评业务改造的 Spring Boot 后端，重点练习 Redis 在真实业务中的使用。</p>
+          <ul class="project-points">
+            <li>店铺缓存：缓存穿透、逻辑过期、缓存重建、更新后删除缓存</li>
+            <li>Redis GEO 附近店铺、Bitmap 每日签到与连续签到统计、ZSet 点赞排行与 Feed 流滚动分页</li>
+            <li>秒杀下单：Redisson 用户级锁、库存扣减、一人一单、事务创建订单</li>
+          </ul>
+          <div class="project-foot">
+            <span class="project-tech">Java 8 · Spring Boot 2.7 · Redis · Redisson · MyBatis-Plus · Nginx</span>
+            <a class="project-link" href="https://github.com/LeiHub13/DianPing" target="_blank" rel="noopener">view_source →</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 03 -->
+      <article class="project">
+        <div class="project-num">03</div>
+        <div>
+          <div class="project-top">
+            <span class="project-name">activity-booking-system</span>
+            <span class="badge">全栈</span>
+          </div>
+          <p class="project-desc">预约报名管理系统 —— 前后端分离的活动报名平台，支持活动发布、报名审核、站内通知与统计分析。</p>
+          <ul class="project-points">
+            <li>Spring Security + JWT 登录认证，普通用户 / 管理员双角色接口权限拦截</li>
+            <li>报名并发控制：数据库条件更新 + 事务，防重复报名、超额报名与重复扣减</li>
+            <li>审核结果自动生成站内通知；报名人数统计与热门活动排行</li>
+          </ul>
+          <div class="project-foot">
+            <span class="project-tech">Java 17 · Spring Boot 3.3 · Vue 3 · TypeScript · Redis · MySQL</span>
+            <a class="project-link" href="https://github.com/LeiHub13/activity-booking-system" target="_blank" rel="noopener">view_source →</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 04 -->
+      <article class="project">
+        <div class="project-num">04</div>
+        <div>
+          <div class="project-top">
+            <span class="project-name">OrderSystem</span>
+            <span class="badge">小程序</span>
+          </div>
+          <p class="project-desc">门店点餐系统 —— 顾客端扫码点餐 + 收银端订单处理台的正餐门店解决方案。</p>
+          <ul class="project-points">
+            <li>三分支协作：backend 后端接口 / customer-mp 顾客点餐小程序 / admin-front 收银管理前端</li>
+            <li>覆盖扫码下单、订单流转、收银处理的完整门店点餐链路</li>
+          </ul>
+          <div class="project-foot">
+            <span class="project-tech">Java · Spring Boot · 微信小程序 · Vue</span>
+            <a class="project-link" href="https://github.com/LeiHub13/OrderSystem" target="_blank" rel="noopener">view_source →</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 05 -->
+      <article class="project">
+        <div class="project-num">05</div>
+        <div>
+          <div class="project-top">
+            <span class="project-name">Edu-Video-web</span>
+          </div>
+          <p class="project-desc">教育学习视频平台 —— 支持视频上传、分类浏览、搜索与后台内容审核的在线教学系统。</p>
+          <ul class="project-points">
+            <li>用户认证、个人中心、视频上传 / 列表 / 详情 / 搜索、课程章节管理</li>
+            <li>管理员后台：数据统计仪表盘、用户管理、内容审核；多级树形视频分类</li>
+          </ul>
+          <div class="project-foot">
+            <span class="project-tech">Java 17 · Spring Boot 3.5 · MyBatis-Plus · MySQL · Redis · Vue</span>
+            <a class="project-link" href="https://github.com/LeiHub13/Edu-Video-web" target="_blank" rel="noopener">view_source →</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>联系我</h2>
+        <span class="caps">ssh connect</span>
+      </div>
+      <div class="contact-box">
+        <p>对后端开发、Redis 实战或 LLM 应用感兴趣？欢迎来我的 GitHub 逛逛，看看代码、提提 Issue。</p>
+        <div class="hero-actions" style="justify-content: center;">
+          <a class="btn btn-solid" href="https://github.com/LeiHub13" target="_blank" rel="noopener">github.com/LeiHub13 →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="wrap">
+  <footer>
+    <span>© 2026 MR.DI — built with vanilla html/css</span>
+    <span>exit_code=<span style="color: var(--primary);">0</span> ✔</span>
+  </footer>
+</div>
+
+</body>
+</html>
